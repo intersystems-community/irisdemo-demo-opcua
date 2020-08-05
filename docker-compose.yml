@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+
+  iris:
+    depends_on:
+      - plc
+    hostname: iris
+    init: true
+    image: intersystemsdc/irisdemo-demo-opcua:version-0.3.0
+    ports:
+    - "51793:51773" # 51773 is the superserver default port
+    - "52783:52773" # 52773 is the webserver/management portal port
+    environment:
+      - IRIS_MASTER_HOST=iris # DNS based on the name of the service!
+      - IRIS_MASTER_PORT=51793 
+      - IRIS_MASTER_USERNAME=SuperUser 
+      - IRIS_MASTER_PASSWORD=sys 
+      - IRIS_MASTER_NAMESPACE=APPINT
+
+
+  plc:
+    hostname: plc
+    init: true
+    image: intersystemsdc/opcua-mockserver:version-0.3.0
+    ports:
+    - "48011:4840"     # opc.tcp
+    volumes:
+    - type: bind
+      source: ./mocksvr-data/
+      target: /app/data
+  
+    
+    
