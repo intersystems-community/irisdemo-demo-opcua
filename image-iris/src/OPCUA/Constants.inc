@@ -40,6 +40,10 @@ ROUTINE OPCUA.Constants [Type=INC]
 #define zfDateConvOPCUA2UNIX				35
 #define zfDateConvUNIX2OPCUA				36
 
+#define zfGetClientStateD					37
+#define zfConnectUser                       38
+#define zfSetupClientC						39
+
 
 
 #; *** OPC UA Constants ***

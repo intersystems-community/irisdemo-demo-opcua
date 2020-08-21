@@ -23,7 +23,6 @@ services:
       source: ./mocksvr-data/
       target: /app/data
   
-    
   certified-server:
     hostname: certified-server
     init: true

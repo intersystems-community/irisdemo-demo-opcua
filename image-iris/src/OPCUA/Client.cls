@@ -229,7 +229,7 @@ Method Initialize() As %Status [ Final ]
 }
 
 /// Outputs the client state and connection status
-Method GetClientState(Output ClientState As %Integer, Output IsConnected As %Integer) As %Status [ Final ]
+Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As %Integer, Output SecureChannelStatus As %Integer, Output SessionStatus As %Integer) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -237,14 +237,16 @@ Method GetClientState(Output ClientState As %Integer, Output IsConnected As %Int
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetClientStateC,"",$LB(..Handle))
+		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetClientStateD,"",$LB(..Handle))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
 
         #; Set output variables
-        Set ClientState = $LI(tRetval,2)
+        Set ConnectionStatus = $LI(tRetval,2)
         Set IsConnected = $LI(tRetval,3)
+        Set SecureChannelStatus = $LI(tRetval,4)
+        Set SessionStatus = $LI(tRetval,5)
         
 	} Catch (e) {
 		Set tSC=e.AsStatus()
@@ -254,7 +256,7 @@ Method GetClientState(Output ClientState As %Integer, Output IsConnected As %Int
 
 /// Performs necessary setup functions prior to client's connecting
 /// to a server. Should be called subsequently to Initialize().
-Method SetupClient(ConnectionTimeout As %Integer = 1000) As %Status [ Final ]
+Method SetupClient(ConnectionTimeout As %Integer = 1000, MessageSecurityMode As %Integer = 1, ClientURI = "", CertificatePathname As %String = "", PrivateKeyPathname As %String = "", TrustListDir As %String = "", RevocationListDir As %String = "") As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -262,7 +264,7 @@ Method SetupClient(ConnectionTimeout As %Integer = 1000) As %Status [ Final ]
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfSetupClientB,"",$LB(..Handle,ConnectionTimeout))
+		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfSetupClientC,"",$LB(..Handle,ConnectionTimeout,MessageSecurityMode,ClientURI,CertificatePathname,PrivateKeyPathname,TrustListDir,RevocationListDir))
 		
 		#; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -281,7 +283,7 @@ Method %OnClose() As %Status
 }
 
 /// Creates a connection to the specified URL.
-Method Connect(url As %String) As %Status [ Final ]
+Method Connect(url As %String, Username As %String = "", Password As %String = "") As %Status [ Final ]
 {
 	// Notice that JN placed the URL in the %OnNew() Method
 
@@ -291,8 +293,16 @@ Method Connect(url As %String) As %Status [ Final ]
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfConnectB,"",$LB(..Handle,url))
-        
+		if Username = "" {
+
+			// Anonymous
+			Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfConnectB,"",$LB(..Handle,url))
+
+		} else {
+
+			Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfConnectUser,"",$LB(..Handle,url,Username,Password))
+		}
+                
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
 
