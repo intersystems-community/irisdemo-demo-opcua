@@ -24,6 +24,24 @@ XData ProductionDefinition
     <Setting Target="Adapter" Name="RequestedSamplingInterval">0</Setting>
     <Setting Target="Adapter" Name="RequestedQueueSize">5</Setting>
   </Item>
+  <Item Name="SecureExample" Category="" ClassName="OPCUA.Service.TCPSubscriptionService" PoolSize="1"
+ Enabled="false" Foreground="false" 
+ Comment="This example receives input data from a server requiring mutual authentication and transmission encryption." 
+ LogTraceEvents="true" Schedule="">
+    <Setting Target="Adapter" Name="DataSourceClass">Examples.OPCUADS.SecureExample</Setting>
+    <Setting Target="Adapter" Name="URL">opc.tcp://certified-server</Setting>
+    <Setting Target="Adapter" Name="RequestedPublishingInterval">1000</Setting>
+    <Setting Target="Adapter" Name="RequestedSamplingInterval">0</Setting>
+    <Setting Target="Adapter" Name="RequestedQueueSize">5</Setting>
+    <Setting Target="Adapter" Name="Username">user1</Setting>
+    <Setting Target="Adapter" Name="Password">password</Setting>
+    <Setting Target="Adapter" Name="SecurityMode">3</Setting>
+    <Setting Target="Adapter" Name="ClientURI">urn:secuac</Setting>
+    <Setting Target="Adapter" Name="PublicCertificate">/usr/irissys/uac/certs/secuac.crt.der</Setting>
+    <Setting Target="Adapter" Name="PrivateKey">/usr/irissys/uac/certs/secuac.key.der</Setting>
+    <Setting Target="Adapter" Name="TrustListDir">/usr/irissys/uac/certs/trustdir</Setting>
+    <Setting Target="Adapter" Name="RevocationListDir">/usr/irissys/uac/certs/crldir</Setting>
+  </Item>
   <Item Name="InternetPollingExample" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
  Enabled="false" Foreground="false" 
  Comment="This example reoeatedly polls a public OPC UA server at opcuaserver.com." 
