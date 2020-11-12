@@ -11,7 +11,7 @@ ClassMethod OPCUA2HOROLOG(Output pHOROLOG As %String, ByRef pOPCUA As %Integer) 
 
 	try {
 
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDateConvOPCUA2HOROLOG,"",$LB(pOPCUA))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDateConvOPCUA2HOROLOG,"",$LB(pOPCUA))
     
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
 
@@ -30,7 +30,7 @@ ClassMethod HOROLOG2OPCUA(Output pOPCUA As %Integer, ByRef pHOROLOG As %String) 
 
 	try {
 
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDateConvHOROLOG2OPCUA,"",$LB(pHOROLOG))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDateConvHOROLOG2OPCUA,"",$LB(pHOROLOG))
     
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
 
@@ -49,7 +49,7 @@ ClassMethod OPCUA2ODBC(Output pODBC As %String, ByRef pOPCUA As %Integer) As %St
 
 	try {
 
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDateConvOPCUA2ODBC,"",$LB(pOPCUA))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDateConvOPCUA2ODBC,"",$LB(pOPCUA))
     
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
 
@@ -68,7 +68,7 @@ ClassMethod ODBC2OPCUA(Output pOPCUA As %Integer, ByRef pODBC As %String) As %St
 
 	try {
 
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDateConvODBC2OPCUA,"",$LB(pODBC))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDateConvODBC2OPCUA,"",$LB(pODBC))
     
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
 
@@ -87,7 +87,7 @@ ClassMethod OPCUA2UNIX(Output pUNIX As %Integer, ByRef pOPCUA As %Integer) As %S
 
 	try {
 
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDateConvOPCUA2UNIX,"",$LB(pOPCUA))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDateConvOPCUA2UNIX,"",$LB(pOPCUA))
     
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
 
@@ -106,7 +106,7 @@ ClassMethod UNIX2OPCUA(Output pOPCUA As %Integer, ByRef pUNIX As %Integer) As %S
 
 	try {
 
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDateConvUNIX2OPCUA,"",$LB(pUNIX))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDateConvUNIX2OPCUA,"",$LB(pUNIX))
     
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
 

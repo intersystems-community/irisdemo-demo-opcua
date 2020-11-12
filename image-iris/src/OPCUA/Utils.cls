@@ -19,7 +19,10 @@ ClassMethod Initialize() As %Status
 
         set tOpcuaStatusCode = 0 // Status = "Good"
 
-		set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetStatusCodeNameB,"",$LB(tOpcuaStatusCode))
+        If '$Data(%ZUtilsIrisOpcuaLibraryId) throw ##class(%Exception.StatusException).CreateFromStatus(0)
+
+		//set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetStatusCodeNameB,"",$LB(tOpcuaStatusCode))
+		set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetStatusCodeNameB,"",$LB(tOpcuaStatusCode))
 
         If $List(tRetval,1)=0 return $$$OK // Library is already initialized
 
@@ -35,7 +38,8 @@ ClassMethod Initialize() As %Status
         set tPathname = ^OPCUA.Library.Pathname
         $$$LOGINFO("Attempting to load IrisOPCUA with pathname "_tPathname)
 
-        do $ZF(-4,5,$$$IrisOPCUALibrary,tPathname)
+        //do $ZF(-4,5,$$$IrisOPCUALibrary,tPathname)
+        set %ZUtilsIrisOpcuaLibraryId = $ZF(-4,1,tPathname)
 
     } catch (e) {
         set tSC = e.AsStatus()
@@ -46,7 +50,10 @@ ClassMethod Initialize() As %Status
 
     try {
 
-		set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetStatusCodeNameB,"",$LB(0))
+        If '$Data(%ZUtilsIrisOpcuaLibraryId) throw ##class(%Exception.StatusException).CreateFromStatus(0)
+
+		//set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetStatusCodeNameB,"",$LB(0))
+		set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetStatusCodeNameB,"",$LB(0))
 
         If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval)
 

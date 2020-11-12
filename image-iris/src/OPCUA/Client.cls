@@ -81,7 +81,7 @@ Method Create() As %Status [ Final, Internal, Private ]
 		Quit:$$$ISERR(tSC)
 
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfCreateClientB,"")
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfCreateClientB,"")
         
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -104,7 +104,7 @@ Method Destroy() As %Status [ Final, Internal, Private ]
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDestroyClientB,"",$listbuild(..Handle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDestroyClientB,"",$listbuild(..Handle))
         
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -131,7 +131,7 @@ ClassMethod GetStatusCodeName(Output StatusCodeName As %String, StatusCode As %I
 		Quit:$$$ISERR(tSC)
 
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetStatusCodeNameB,"",$LB(StatusCode))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetStatusCodeNameB,"",$LB(StatusCode))
         
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -158,7 +158,7 @@ ClassMethod GetClientStateName(Output ClientStateName As %String, ClientStateCod
 		Quit:$$$ISERR(tSC)
 
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetClientStateNameB,"",$LB(ClientStateCode))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetClientStateNameB,"",$LB(ClientStateCode))
         
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -185,7 +185,7 @@ ClassMethod GetSimpleErrorCodeName(Output ErrorName As %String, ErrorCode As %In
 		Quit:$$$ISERR(tSC)
 
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetSimpleErrorCodeNameB,"",$LB(ErrorCode))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetSimpleErrorCodeNameB,"",$LB(ErrorCode))
         
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -237,7 +237,7 @@ Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfGetClientStateD,"",$LB(..Handle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetClientStateD,"",$LB(..Handle))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -264,7 +264,7 @@ Method SetupClient(ConnectionTimeout As %Integer = 1000, MessageSecurityMode As 
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfSetupClientC,"",$LB(..Handle,ConnectionTimeout,MessageSecurityMode,ClientURI,CertificatePathname,PrivateKeyPathname,TrustListDir,RevocationListDir))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfSetupClientC,"",$LB(..Handle,ConnectionTimeout,MessageSecurityMode,ClientURI,CertificatePathname,PrivateKeyPathname,TrustListDir,RevocationListDir))
 		
 		#; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -296,11 +296,11 @@ Method Connect(url As %String, Username As %String = "", Password As %String = "
 		if Username = "" {
 
 			// Anonymous
-			Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfConnectB,"",$LB(..Handle,url))
+			Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfConnectB,"",$LB(..Handle,url))
 
 		} else {
 
-			Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfConnectUser,"",$LB(..Handle,url,Username,Password))
+			Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfConnectUser,"",$LB(..Handle,url,Username,Password))
 		}
                 
         #; Test for error condition
@@ -321,7 +321,7 @@ Method Disconnect() As %Status [ Final ]
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDisconnectB,"",$LB(..Handle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDisconnectB,"",$LB(..Handle))
     
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -365,7 +365,7 @@ Method ReadBulkSetup(Output QueryHandle As %Integer, NodeTypes As %List, NodeNam
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkSetup,"",$LB(..Handle,NodeTypes,NodeNamespaces,NodeIds,NodeAttributes))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkSetup,"",$LB(..Handle,NodeTypes,NodeNamespaces,NodeIds,NodeAttributes))
   
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -396,7 +396,7 @@ Method ReadBulkSetupB(Output QueryHandle As %Integer, NodeIds As %List, NodeAttr
 		Set NodeIdCLs = NodeIds
 
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkSetupB,"",$LB(..Handle,NodeIdCLs,NodeAttributes))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkSetupB,"",$LB(..Handle,NodeIdCLs,NodeAttributes))
   
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -451,7 +451,7 @@ Method ReadBulkSetupC(Output QueryHandle As %Integer, ByRef Specification As %Li
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkSetupC,"",$LB(..Handle,Specification))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkSetupC,"",$LB(..Handle,Specification))
   
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -478,7 +478,7 @@ Method ReadBulkPoll(Output Results As %List, QueryHandle As %Integer) As %Status
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkPoll,"",$LB(..Handle,QueryHandle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkPoll,"",$LB(..Handle,QueryHandle))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -506,7 +506,7 @@ Method ReadBulkPollB(Output Results As %List, QueryHandle As %Integer) As %Statu
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkPollB,"",$LB(..Handle,QueryHandle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkPollB,"",$LB(..Handle,QueryHandle))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -532,7 +532,7 @@ Method ReadBulkPollC(Output Results As %List, QueryHandle As %Integer) As %Statu
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkPollC,"",$LB(..Handle,QueryHandle,"",""))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkPollC,"",$LB(..Handle,QueryHandle,"",""))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -555,7 +555,7 @@ Method ReadBulkClear(QueryHandle As %Integer) As %Status [ Final ]
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfReadBulkClear,"",$LB(..Handle,QueryHandle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadBulkClear,"",$LB(..Handle,QueryHandle))
     
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -590,7 +590,7 @@ Method CreateSubscriptionSet(Output QueryHandle As %Integer, NodeIds As %List, N
 		Set NodeIdCLs = NodeIds
 
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfCreateSubscription,"",$LB(..Handle,NodeIdCLs,NodeAttributes,PublishingInterval,LifetimeCount,MaxKeepAliveCount,MaxNotificationsPerPublish))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfCreateSubscription,"",$LB(..Handle,NodeIdCLs,NodeAttributes,PublishingInterval,LifetimeCount,MaxKeepAliveCount,MaxNotificationsPerPublish))
   
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -624,7 +624,7 @@ Method CreateSubscriptionSetB(Output QueryHandle As %Integer, Specification As %
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfCreateSubscriptionB,"",$LB(..Handle,Specification,PublishingInterval,LifetimeCount,MaxKeepAliveCount,MaxNotificationsPerPublish,SamplingInterval,QueueSize))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfCreateSubscriptionB,"",$LB(..Handle,Specification,PublishingInterval,LifetimeCount,MaxKeepAliveCount,MaxNotificationsPerPublish,SamplingInterval,QueueSize))
   
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -661,7 +661,7 @@ Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, Pol
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfPollSubscription,"",$LB(..Handle,QueryHandle,PollingTimeout,""))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfPollSubscription,"",$LB(..Handle,QueryHandle,PollingTimeout,""))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -684,7 +684,7 @@ Method DeleteSubscriptionSet(QueryHandle As %Integer) As %Status [ Final ]
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-6,$$$IrisOPCUALibrary,$$$zfDeleteSubscription,"",$LB(..Handle,QueryHandle))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfDeleteSubscription,"",$LB(..Handle,QueryHandle))
     
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
