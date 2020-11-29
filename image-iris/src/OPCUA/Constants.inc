@@ -119,6 +119,9 @@ ROUTINE OPCUA.Constants [Type=INC]
 #define OpcuaAttributeUserExecutable			22
 #define OpcuaAttributeDataTypeDefinition		23
 
+#define OpcuaMessageSecurityModeNone            1
+#define OpcuaMessageSecurityModeSignAndEncrypt  3
+
 
 
 #; *** Client Codes ***

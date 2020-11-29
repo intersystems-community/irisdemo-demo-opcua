@@ -95,6 +95,11 @@ Property QueryHandle As %Integer [ Private ];
 
 Property QtySequentialEmptyResults As %Integer [ InitialExpression = 0, Private ];
 
+Property MaxInternalQueueSize As %Integer [ InitialExpression = 0, Private ];
+
+Property MaxBatchSize As %Integer [ InitialExpression = 0, Private ];
+
+
 // *** METHODS ***
 
 /// Must be called before connecting. 
@@ -145,8 +150,9 @@ Method Connect() As %Status
 		#dim tMaxKeepAliveCount as %Integer = ..RequestedMaxKeepAliveCount
 		#dim tSamplingInterval as %Integer = ..RequestedSamplingInterval
 		#dim tQueueSize as %Integer = ..RequestedQueueSize
+		#dim tMaxInternalQueueSize as %Integer = ..MaxInternalQueueSize
 
-		set tSC = ..Client.CreateSubscriptionSetB(.tHandle,..Specification,.tPublishingInterval,.tLifetimeCount,.tMaxKeepAliveCount,..MaxNotificationsPerPublish,.tSamplingInterval,.tQueueSize)
+		set tSC = ..Client.CreateSubscriptionSetB(.tHandle,..Specification,.tPublishingInterval,.tLifetimeCount,.tMaxKeepAliveCount,..MaxNotificationsPerPublish,.tSamplingInterval,.tQueueSize,tMaxInternalQueueSize)
 		Quit:$$$ISERR(tSC)
 
 		set ..QueryHandle = tHandle
@@ -191,7 +197,7 @@ Method OnTask() As %Status
 
 		#dim tList as %List
 
-		set tSC = ..Client.PollSubscriptionSet(.tList,..QueryHandle,..SubscriptionPollingTimeout)
+		set tSC = ..Client.PollSubscriptionSet(.tList,..QueryHandle,..SubscriptionPollingTimeout,..MaxBatchSize)
 		Quit:$$$ISERR(tSC)
 
 		//set tSC = ..BusinessHost.ProcessInput(.tList)  
@@ -200,6 +206,25 @@ Method OnTask() As %Status
 
 		set tQty = $LI(tList,2)
 		set tBatch = $LI(tList,3)
+		set tQueueStats = $LI(tList,4)
+
+		set tQtyLost = $LI(tQueueStats,7) - $LI(tQueueStats,3) // Qty lost after - before
+		set tQueueSizeLimit = $LI(tQueueStats,1) // zero if unlimited
+
+		if tQtyLost > 0 {
+			$$$LOGERROR("Data loss ("_tQtyLost_" elements). Internal queue size insufficient for incoming data rate.")
+		} elseif tQueueSizeLimit > 0 {
+			set tQueueUsage = $LI(tQueueStats,4) / tQueueSizeLimit // Queue size before processing / Max allowed size
+			if tQueueUsage > 0.5 {
+				$$$LOGWARNING("Internal queue utilized at greater than 50% capacity: "_tQueueUsage)
+			}
+		}
+
+		if (..MaxBatchSize '= 0) && (tQty >= ..MaxBatchSize) {
+			set tCurrentQueueSize = $LI(tQueueStats,6)
+			set tQueueItemsProcessed = $LI(tQueueStats,4) - tCurrentQueueSize // Queue size before - after processing
+			$$$LOGWARNING("Batch size capacity warning. Performance may degrade. Current queue items processed = "_tQueueItemsProcessed_". Current internal queue size = "_tCurrentQueueSize_".")
+		}
 
 		for i=1:1:tQty {
 

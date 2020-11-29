@@ -616,7 +616,7 @@ Method CreateSubscriptionSet(Output QueryHandle As %Integer, NodeIds As %List, N
 /// function, the PublishingInterval, the LifetimeCount, the 
 /// MaxKeepAliveCount, and the MaxNotificationsPerPublish are defined in
 /// section 5.13.2.2 of the OPC UA specification.
-Method CreateSubscriptionSetB(Output QueryHandle As %Integer, Specification As %List, ByRef PublishingInterval As %Double, ByRef LifetimeCount As %Integer, ByRef MaxKeepAliveCount As %Integer, MaxNotificationsPerPublish As %Integer, SamplingInterval As %Integer, QueueSize As %Integer) As %Status [ Final ]
+Method CreateSubscriptionSetB(Output QueryHandle As %Integer, Specification As %List, ByRef PublishingInterval As %Double, ByRef LifetimeCount As %Integer, ByRef MaxKeepAliveCount As %Integer, MaxNotificationsPerPublish As %Integer, SamplingInterval As %Integer, QueueSize As %Integer, MaxInternalQueueSize As %Integer) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -624,7 +624,7 @@ Method CreateSubscriptionSetB(Output QueryHandle As %Integer, Specification As %
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfCreateSubscriptionB,"",$LB(..Handle,Specification,PublishingInterval,LifetimeCount,MaxKeepAliveCount,MaxNotificationsPerPublish,SamplingInterval,QueueSize))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfCreateSubscriptionB,"",$LB(..Handle,Specification,PublishingInterval,LifetimeCount,MaxKeepAliveCount,MaxNotificationsPerPublish,SamplingInterval,QueueSize,MaxInternalQueueSize))
   
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -653,7 +653,7 @@ Method CreateSubscriptionSetB(Output QueryHandle As %Integer, Specification As %
 /// resemblance to the output of some of the polling functions. This is
 /// because, unlike the polling functions, this function can return 
 /// multiple rows per invocation.
-Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, PollingTimeout As %Integer = 500) As %Status [ Final ]
+Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, PollingTimeout As %Integer = 500, MaxLines As %Integer = 0) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -661,7 +661,7 @@ Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, Pol
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfPollSubscription,"",$LB(..Handle,QueryHandle,PollingTimeout,""))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfPollSubscription,"",$LB(..Handle,QueryHandle,PollingTimeout,MaxLines))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -693,6 +693,68 @@ Method DeleteSubscriptionSet(QueryHandle As %Integer) As %Status [ Final ]
 		Set tSC=e.AsStatus()
 	}
 
+	Quit tSC
+}
+
+// --------------------------------------------------------------------------------------------
+
+// Miscellaneous
+
+// --------------------------------------------------------------------------------------------
+
+/// Reads the current value from a node on a server.
+Method ReadValueAttribute(Output Results as %List, NodeId, NodeNamespace As %Integer, NodeIdType as %Integer = 0) As %Status [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim e As %Exception.AbstractException
+	
+	Try {
+		
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfReadAttribute,"",$LB(..Handle,NodeId,NodeNamespace,NodeIdType,$$$OpcuaAttributeValue))
+
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+        Set Results = tRetval
+        
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+	
+	Quit tSC
+}
+
+/// Writes a simple value to a single node on a server.
+/// <ul>
+/// <li>Datum -- The data element to be written. 
+/// <li>DataType -- A numeric value indicating the data type of the 
+/// data element to be written. (e.g. $$$OpcuaDataTypeString, 
+/// $$$OpcuaDataTypeInt32, etc.)
+/// <li>NodeId -- A numeric or string values indicating the primary
+/// identifier used to identify the requested node.</li>
+/// <li>NodeNamespace -- The namespace of the requested node.</li>
+/// <li>NodeIdType -- A numeric value indicating the data type used for
+/// the NodeId argument, either a string or an integer. (Use 
+/// $$$OpcuaNodeIdTypeString or $$$OpcuaNodeIdTypeNumeric.)</li>
+/// </ul>
+Method WriteValueAttribute(Datum, DataType as %Integer, NodeId, NodeNamespace As %Integer, NodeIdType as %Integer = 0) As %Status [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim e As %Exception.AbstractException
+	
+	Try {
+		
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfWriteAttribute,"",$LB(..Handle,Datum,DataType,NodeId,NodeNamespace,NodeIdType,$$$OpcuaAttributeValue))
+
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+	
 	Quit tSC
 }
 
