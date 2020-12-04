@@ -31,7 +31,7 @@ XData ProductionDefinition
     <Setting Target="Adapter" Name="DataSourceClass">Examples.OPCUADS.SecureExample</Setting>
     <Setting Target="Adapter" Name="URL">opc.tcp://certified-server</Setting>
     <Setting Target="Adapter" Name="RequestedPublishingInterval">1000</Setting>
-    <Setting Target="Adapter" Name="RequestedSamplingInterval">0</Setting>
+    <Setting Target="Adapter" Name="RequestedSamplingInterval">250</Setting>
     <Setting Target="Adapter" Name="RequestedQueueSize">5</Setting>
     <Setting Target="Adapter" Name="Username">user1</Setting>
     <Setting Target="Adapter" Name="Password">password</Setting>

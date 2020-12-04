@@ -1,7 +1,7 @@
 Include (OPCUA.Constants, Ensemble)
 
-/// IRIS OPC UA Simple Write Example
-Class Examples.OPCUA.SimpleWrite 
+/// IRIS OPC UA Secure Write Example
+Class Examples.OPCUA.SecureWrite 
 {
 
 /// Using a secure connection, writes an integer value to a specific
