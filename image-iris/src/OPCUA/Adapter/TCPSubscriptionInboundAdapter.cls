@@ -272,17 +272,20 @@ Method OnTask() As %Status
 		}
 
 		if ..LastReportedError '= tSC {
-			$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC))
+			$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
 			set ..LastReportedError = tSC
 			set ..BusinessHost.%WaitForNextCallInterval = 1	
 		} else {
-			$$$TRACE("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC))
+			$$$TRACE("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
 		}
 
 		$$$SetHostMonitor(..BusinessHost.%ConfigName,$$$eMonitorStatus,"Error")
 
 		if ##class(%SYSTEM.SQL).DATEDIFF("ms",..ConnectionRetryEndTime,$ZTimestamp) > 0 {
-			$$$LOGERROR("Error encountered : Maximum time since a successful response exceed : "_$SYSTEM.Status.GetErrorText(tSC))
+			if ..IsConnected {
+				$$$LOGERROR("Error encountered : Maximum time since a successful response exceeded : "_$SYSTEM.Status.GetErrorText(tSC))
+				set ..IsConnected = 0
+			}
 			return tSC
 		}
 
@@ -295,55 +298,72 @@ Method OnTask() As %Status
 		
 		if tProcessingErrors > 0 {
 
-			$$$LOGWARNING(tProcessingErrors_" processing error(s) encountered concurrent with the successful entry of "_tQtyProcessed_" record(s)")
+			$$$LOGWARNING(tProcessingErrors_" processing error(s) encountered concurrent with the successful entry of "_tQtyProcessed_" record(s) : "_..Client.GetClientStateString())
 
 			set ..QtySequentialEmptyResults = 0
 
 		} elseif tQtyProcessed > 0 {
 
 			//$$$TRACE("1 record entered in "_tElapsedTime_" seconds.")
-			$$$TRACE(tQtyProcessed_" record(s) entered in "_tElapsedTime_" seconds with no errors encountered")	
+			$$$TRACE(tQtyProcessed_" record(s) entered in "_tElapsedTime_" seconds with no errors encountered : "_..Client.GetClientStateString())	
 
 			set ..QtySequentialEmptyResults = 0
 
-		} elseif ..ReestablishOnEmptyResult > 0 {
-
-			$$$TRACE(tQtyProcessed_" record(s) entered in "_tElapsedTime_" seconds with no errors encountered")	
-			
-			// Connection may have been dropped and should perhaps be reestablished 
-			set ..QtySequentialEmptyResults = ..QtySequentialEmptyResults + 1
-
-			if ..QtySequentialEmptyResults >= ..ReestablishOnEmptyResult {
-
-				$$$LOGWARNING("Maximum number of sequential empty results exceeded. Disconnecting.")	
-
-				try {
-					set tSC = ..Client.ReadBulkClear(..QueryHandle)
-				} catch (e) {
-					set tSC = e.AsStatus()
-				}
-
-				if $$$ISERR(tSC) {
-					$$$TRACE("Ignoring error encountered when deleting old subscription : "_$SYSTEM.Status.GetErrorText(tSC))
-				}
-
-				try {
-					set tSC = ..Client.Disconnect()
-				} catch (e) {
-					set tSC = e.AsStatus()
-				}
-
-				if $$$ISERR(tSC) {
-					$$$TRACE("Ignoring error encountered when disconnecting : "_$SYSTEM.Status.GetErrorText(tSC))
-				}
-
+		} else {
+		
+			// No results were returned. Is the client connected?
+			try {
+				#dim tTmp as %Integer = -1
+				do ..Client.GetClientState("",.tTmp)
+				set ..IsConnected = tTmp
+			} catch (e) {
 				set ..IsConnected = 0
-				set ..QtySequentialEmptyResults = 0
 			}
 
-		} else {
+			if ..IsConnected = 0 {
 
-			$$$TRACE(tQtyProcessed_" record(s) entered in "_tElapsedTime_" seconds with no errors encountered")	
+				$$$LOGWARNING("Connection lost : "_..Client.GetClientStateString())
+
+			} elseif ..ReestablishOnEmptyResult > 0 {
+
+				$$$TRACE(tQtyProcessed_" record(s) entered in "_tElapsedTime_" seconds with no errors encountered : "_..Client.GetClientStateString())	
+				
+				// Connection may have been dropped and should perhaps be reestablished 
+				set ..QtySequentialEmptyResults = ..QtySequentialEmptyResults + 1
+
+				if ..QtySequentialEmptyResults >= ..ReestablishOnEmptyResult {
+
+					$$$LOGWARNING("Maximum number of sequential empty results exceeded. Disconnecting.")	
+
+					try {
+						set tSC = ..Client.ReadBulkClear(..QueryHandle)
+					} catch (e) {
+						set tSC = e.AsStatus()
+					}
+
+					if $$$ISERR(tSC) {
+						$$$TRACE("Ignoring error encountered when deleting old subscription : "_$SYSTEM.Status.GetErrorText(tSC))
+					}
+
+					try {
+						set tSC = ..Client.Disconnect()
+					} catch (e) {
+						set tSC = e.AsStatus()
+					}
+
+					if $$$ISERR(tSC) {
+						$$$TRACE("Ignoring error encountered when disconnecting : "_$SYSTEM.Status.GetErrorText(tSC))
+					}
+
+					set ..IsConnected = 0
+					set ..QtySequentialEmptyResults = 0
+				}
+
+			} else {
+
+				$$$TRACE(tQtyProcessed_" record(s) entered in "_tElapsedTime_" seconds with no errors encountered : "_..Client.GetClientStateString())	
+			}
+
 		}
 
 		$$$SetHostMonitor(..BusinessHost.%ConfigName,$$$eMonitorStatus,"OK")

@@ -43,6 +43,8 @@ ROUTINE OPCUA.Constants [Type=INC]
 #define zfGetClientStateD					37
 #define zfConnectUser                       38
 #define zfSetupClientC						39
+#define zfGetChannelStateName				40
+#define zfGetSessionStateName				41
 
 
 

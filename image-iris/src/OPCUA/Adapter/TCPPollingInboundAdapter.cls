@@ -101,11 +101,11 @@ Method OnTask() As %Status
 		}
 
 		if ..LastReportedError '= tSC {
-			$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC))
+			$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
 			set ..LastReportedError = tSC
 			set ..BusinessHost.%WaitForNextCallInterval = 1	
 		} else {
-			$$$TRACE("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC))
+			$$$TRACE("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
 		}
 
 		$$$SetHostMonitor(..BusinessHost.%ConfigName,$$$eMonitorStatus,"Error")
@@ -122,7 +122,7 @@ Method OnTask() As %Status
 		set ..LastReportedError = tSC // $$$OK
 		set ..BusinessHost.%WaitForNextCallInterval = 1
 		
-		$$$TRACE("1 record entered in "_tElapsedTime_" seconds.")
+		$$$TRACE("1 record entered in "_tElapsedTime_" seconds. : "_..Client.GetClientStateString())
 
 		$$$SetHostMonitor(..BusinessHost.%ConfigName,$$$eMonitorStatus,"OK")
 

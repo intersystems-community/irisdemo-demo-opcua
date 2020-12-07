@@ -172,6 +172,64 @@ ClassMethod GetClientStateName(Output ClientStateName As %String, ClientStateCod
 	Quit tSC
 }
 
+/// Outputs the name of a corresponding code indicating the secure channel state.
+ClassMethod GetChannelStateName(ChannelStateCode As %Integer, ByRef pSC As %Status = "") As %String [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim tRetName As %String = ""
+	
+	Try {
+		
+		#; Ensure library initialization
+		Set tSC = ..InitializeLibrary()
+		Quit:$$$ISERR(tSC)
+
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetChannelStateName,"",$LB(ChannelStateCode))
+        
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+        #; Set output variables
+        Set tRetName = $LI(tRetval,2)
+
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+
+	set pSC = tSC
+	return tRetName
+}
+
+/// Outputs the name of a corresponding code indicating the session state.
+ClassMethod GetSessionStateName(SessionStateCode As %Integer, ByRef pSC As %Status = "") As %String [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim tRetName As %String = ""
+	
+	Try {
+		
+		#; Ensure library initialization
+		Set tSC = ..InitializeLibrary()
+		Quit:$$$ISERR(tSC)
+
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetSessionStateName,"",$LB(SessionStateCode))
+        
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+        #; Set output variables
+        Set tRetName = $LI(tRetval,2)
+
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+
+	set pSC = tSC
+	return tRetName
+}
+
 /// Outputs the name of the corresponding error code. 
 ClassMethod GetSimpleErrorCodeName(Output ErrorName As %String, ErrorCode As %Integer) As %Status [ Final ]
 {
@@ -252,6 +310,40 @@ Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As
 		Set tSC=e.AsStatus()
 	}
 	Quit tSC
+}
+
+/// Outputs a human-readable string describing the client state and connection status
+Method GetClientStateString(ByRef pSC as %Status = "") As %String [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim tRetStr As %String = ""
+	#dim e As %Exception.AbstractException	
+
+	Try {
+		
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetClientStateD,"",$LB(..Handle))
+
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+        #; Set output variables
+        Set ConnectionStatus = $LI(tRetval,2)
+        Set IsConnected = $LI(tRetval,3)
+        Set SecureChannelStatus = $LI(tRetval,4)
+        Set SessionStatus = $LI(tRetval,5)
+        
+		#dim tConnStatusDesc as %String
+		do ##class(OPCUA.Client).GetStatusCodeName(.tConnStatusDesc,ConnectionStatus)
+
+		set tRetStr = "ChannelStatus='"_..GetChannelStateName(SecureChannelStatus)_"', SessionStatus='"_..GetSessionStateName(SessionStatus)_"', ConnectionStatus='"_tConnStatusDesc_"'"
+
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+
+	set pSC = tSC
+	return tRetStr
 }
 
 /// Performs necessary setup functions prior to client's connecting
