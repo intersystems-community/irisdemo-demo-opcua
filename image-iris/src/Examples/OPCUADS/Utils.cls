@@ -1,5 +1,3 @@
-Include DEMOMACROS
-
 Class Examples.OPCUADS.Utils
 {
 
