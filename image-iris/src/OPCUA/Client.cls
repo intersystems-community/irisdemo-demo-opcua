@@ -59,7 +59,8 @@ ClassMethod DecodeError(list As %String) As %Status [ Final ]
 		Set tTypeTxt=$$$Text("Undefined Error")
 	}
 	
-	Quit $$$ERROR($$$OPCUACLIENT,tCode,tTypeTxt,tMsgTxt)
+	//Quit $$$ERROR($$$OPCUACLIENT,tCode,tTypeTxt,tMsgTxt)
+	Quit $$$ERROR($$$OPCUACLIENT,tMsgTxt)
 }
 
 /// Loads the IrisOPCUA library if necessary
@@ -348,7 +349,7 @@ Method GetClientStateString(ByRef pSC as %Status = "") As %String [ Final ]
 
 /// Performs necessary setup functions prior to client's connecting
 /// to a server. Should be called subsequently to Initialize().
-Method SetupClient(ConnectionTimeout As %Integer = 1000, MessageSecurityMode As %Integer = 1, ClientURI = "", CertificatePathname As %String = "", PrivateKeyPathname As %String = "", TrustListDir As %String = "", RevocationListDir As %String = "") As %Status [ Final ]
+Method SetupClient(ConnectionTimeout As %Integer = 3000, MessageSecurityMode As %Integer = 1, ClientURI = "", CertificatePathname As %String = "", PrivateKeyPathname As %String = "", TrustListDir As %String = "", RevocationListDir As %String = "") As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException

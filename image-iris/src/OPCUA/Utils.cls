@@ -27,7 +27,7 @@ ClassMethod Initialize() As %Status
         If $List(tRetval,1)=0 return $$$OK // Library is already initialized
 
     } catch (e) {
-        $$$LOGINFO("IrisOPCUA may not be loaded : "_$SYSTEM.Status.GetErrorText(e.AsStatus()))
+        $$$TRACE("IrisOPCUA may not be loaded")
     }
 
     #dim tSC as %Status = $$$OK
@@ -39,7 +39,7 @@ ClassMethod Initialize() As %Status
         set tSC = ##class(OPCUA.Utils).GetLibPathname(.tPathname)
 		$$$ThrowOnError(tSC)
         
-        $$$LOGINFO("Attempting to load IrisOPCUA with pathname '"_tPathname_"'")
+        $$$TRACE("Attempting to load IrisOPCUA with pathname '"_tPathname_"'")
 
         //do $ZF(-4,5,$$$IrisOPCUALibrary,tPathname)
         set %ZUtilsIrisOpcuaLibraryId = $ZF(-4,1,tPathname)

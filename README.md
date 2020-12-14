@@ -2,6 +2,8 @@
 
 This repository holds an example application in which IRIS uses 
 OPC UA to access data and subsequently store that data in tables/globals.
+A simple method by which small amounts of data can be written to an 
+OPC UA server using ObjectScript is also implemented.
 
 ## OPC UA Basics
 
@@ -51,8 +53,12 @@ can be found at http://opcfoundation.org.
 
 The OPC UA adapter for IRIS contained in this repository
 serves to allow IRIS to act 
-as an OPC UA client in order to access OPC UA servers 
-and query those servers for information. 
+as an OPC UA client in order to access OPC UA servers,
+primarily to query those servers for information, allowing the 
+construction of data feeds to continuously import data into IRIS.
+(The adapter can also be used to write data to servers in 
+limited amounts as is described regarding the 
+SimpleWrite and SecureWrite demos at bottom).
 
 Users of the adapter can construct "DataSource" classes 
 in ObjectScript with properties that reference queryable OPC UA nodes 
@@ -171,7 +177,7 @@ IRIS OPC UA client at this time. (It is unclear if security
 standards may be automatically reduced if a target server 
 does not require them.)
 
-## Running the Demos
+## Running the Demos Importing Data into IRIS
 
 The demos in this repository can be run using only a few steps:
 
@@ -230,6 +236,65 @@ in its use of security, and connecting to that server requires that certain mini
 security standards are met. More information on the server can be found at 
 https://open62541.org/certified-sdk.
 
+## SimpleWrite and SecureWrite Demos
+
+Demos showing the the use of the adapter to write small amounts of data
+to OPC UA servers are provided for use with an IRIS terminal session.
+ObjectScript code constituting the demos is provided in each of the 
+Examples.OPCUA.SimpleWrite.Run() procedure and the 
+Examples.OPCUA.SecureWrite.Run() procedure.
+
+In order to run these demos, one must follow the same initial steps as before:
+
+* Download the relevant code from GitHub.
+* Run "./build.sh" in order to build both the IRIS Docker image.
+(The second Docker image used previously in the "SecureExample"
+is also used here in the "SecureWrite" example.)
+* Run "docker-compose up" to start the Docker containers. 
+
+Subsequently, the procedure to access the terminal-based demos differs:
+
+* Start an IRIS terminal session. Such can be accomplished by running
+"iris session iris" from within a bash shell running within the IRIS
+Docker container. (The procedure to access such a bash shell may differ
+on some systems. On Mac OS, with Docker accessible from the command 
+prompt, one can run "docker ps" to list information about the running 
+Dockeer containers including their "container ids". Select the 
+container id for the container named "irisdemo-demo-opcua_iris_1";
+it can be used to access a bash shell within that container using the
+command "docker exec -it &lt;CONTAINER_IR&gt; /bin/bash".)
+* Login using username "SuperUser" and password "sys".
+* Select the APPINT namespace using "zn ""APPINT""". (Notice the 
+double-quotes around APPINT.)
+* Each of the two demos can not be run by invoking the Run() method of 
+each of their classes: "w ##class(Examples.OPCUA.SimpleWrite).Run()" 
+and "w ##class(Examples.OPCUA.SecureWrite).Run()".
+
+Both of the write demos illustrate the use of a simple feature of the 
+adapter by which a single data element can be written to an
+OPC UA server. Simple read commands are also included so that the 
+values on the server can be diplayed in the terminal before and
+after the write procedure call is executed.
+
+* SimpleWrite - This demo writes a simple value to a publicly
+accessible OPC UA server located on the Internet at 
+opc.tcp://opcuaserver.com:48010. Security features of the 
+IRIS OPC UA adapter are not used.
+* SecureWrite - This demo writes a simple value to an OPC UA server
+running in one of the locally-running Docker containers, the same
+OPC Foundation-certified server instance that is used for the 
+Secure data feed example (using Examples.OPCUADS.SecureExample.cls),
+and does so using a secure connection. If the SecureExample data
+feed is running at the time that the Examples.OPCUA.SecureWrite.Run() 
+procedure is invoked, then the results of the write will be
+visible, not only on the screen within the IRIS terminal session,
+but also in the incomcing SecureExample data as well. In order to 
+view the results in the data feed, first note the time at which the
+Examples.OPCUA.SecureWrite.Run() procedure is invoked; the value 
+"57" should be viewable in the column "TheAnswer_Value" for the 
+one-second period after the invocation of the procedure. Otherwise,
+the values in "TheAnswer_Value" column should be "42" instead. 
+
 ## Future Work
 
 Future work regarding this adapter may include work on:
@@ -241,15 +306,13 @@ this adapter supports only a small number of primitive data types
 while OPC UA is defined so as to support quite a few others. 
 Future work may involve modifying the adapter 
 so that it can download other more complex data types as well.
+* Expanded Function Set - The OPC UA protocol specifies ways in
+which numerous operations may be conducted, most of which are not
+implemented here. Future work may implement some of those functions.
 
 ## Caution
 
 This OPC UA adapter for the IRIS is implemented using a native-code 
-linked-library compiled specifically for use in Ubuntu containers. 
-While the ObjectScript code included in this repository may work 
-with many versions of IRIS, the linked-library itself will not. 
-This OPC UA adapter is thus not necessarily usable outside of 
-the context of these demos at this time. 
-It is not clear whether or not functionality 
-supporting this adapter will be available in future versions of IRIS.
-
+linked-library compiled specifically for use in Ubuntu containers.
+Other implementations of the adapter for use on other 
+platforms and operating systems may be available.
