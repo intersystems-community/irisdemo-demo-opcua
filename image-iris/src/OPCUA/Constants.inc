@@ -45,6 +45,10 @@ ROUTINE OPCUA.Constants [Type=INC]
 #define zfSetupClientC						39
 #define zfGetChannelStateName				40
 #define zfGetSessionStateName				41
+#define zfBrowse            				42
+#define zfBrowseNext        				43
+#define zfVersion           				44
+#define zfGetUStr           				45
 
 
 
@@ -142,12 +146,13 @@ ROUTINE OPCUA.Constants [Type=INC]
 
 #; Error Types (UACERR_TYPE)
 #define ErrorTypeNone		0
-#define ErrorTypeApp		1
-#define ErrorTypeCallin		2
-#define ErrorTypeOPCUA		3
-#define ErrorTypeClient		4
-#define ErrorTypeServer		5
-#define ErrorTypeUnknown	6
+#define ErrorTypeInfo		1
+#define ErrorTypeApp		2
+#define ErrorTypeCallin		3
+#define ErrorTypeOPCUA		4
+#define ErrorTypeClient		5
+#define ErrorTypeServer		6
+#define ErrorTypeUnknown	7
 
 #; Miscellaneous
 #define utf8			    $$$Text("utf-8 encoded string")

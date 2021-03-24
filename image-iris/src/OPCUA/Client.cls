@@ -43,6 +43,8 @@ ClassMethod DecodeError(list As %String) As %Status [ Final ]
 	Set tType=$List(list,2),tCode=$List(list,3),tMsgTxt=$List(list,4)
 	If tType=$$$ErrorTypeNone {
 		Set tTypeTxt=$$$Text("No Error")
+	} elseif tType=$$$ErrorTypeInfo {
+		Set tTypeTxt=$$$Text("Incomplete w/o Err")
 	} elseif tType=$$$ErrorTypeApp {
 		Set tTypeTxt=$$$Text("Application Error")
 	} elseif tType=$$$ErrorTypeCallin {
@@ -288,7 +290,7 @@ Method Initialize() As %Status [ Final ]
 }
 
 /// Outputs the client state and connection status
-Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As %Integer, Output SecureChannelStatus As %Integer, Output SessionStatus As %Integer) As %Status [ Final ]
+Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As %Integer, Output SecureChannelStatus As %Integer, Output SessionStatus As %Integer, Output ClientResetFlag As %Integer) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -306,6 +308,7 @@ Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As
         Set IsConnected = $LI(tRetval,3)
         Set SecureChannelStatus = $LI(tRetval,4)
         Set SessionStatus = $LI(tRetval,5)
+		Set ClientResetFlag = $LI(tRetval,6)
         
 	} Catch (e) {
 		Set tSC=e.AsStatus()
@@ -314,7 +317,7 @@ Method GetClientState(Output ConnectionStatus As %Integer, Output IsConnected As
 }
 
 /// Outputs a human-readable string describing the client state and connection status
-Method GetClientStateString(ByRef pSC as %Status = "") As %String [ Final ]
+Method GetClientStateString(ByRef pSC As %Status = "") As %String [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim tRetStr As %String = ""
@@ -333,11 +336,15 @@ Method GetClientStateString(ByRef pSC as %Status = "") As %String [ Final ]
         Set IsConnected = $LI(tRetval,3)
         Set SecureChannelStatus = $LI(tRetval,4)
         Set SessionStatus = $LI(tRetval,5)
+		Set ResetFlag = $LI(tRetval,6)
         
 		#dim tConnStatusDesc as %String
 		do ##class(OPCUA.Client).GetStatusCodeName(.tConnStatusDesc,ConnectionStatus)
 
 		set tRetStr = "ChannelStatus='"_..GetChannelStateName(SecureChannelStatus)_"', SessionStatus='"_..GetSessionStateName(SessionStatus)_"', ConnectionStatus='"_tConnStatusDesc_"'"
+		if ResetFlag = 1 {
+			set tRetStr = tRetStr_" (Client reset scheduled)"
+		}
 
 	} Catch (e) {
 		Set tSC=e.AsStatus()
@@ -349,15 +356,18 @@ Method GetClientStateString(ByRef pSC as %Status = "") As %String [ Final ]
 
 /// Performs necessary setup functions prior to client's connecting
 /// to a server. Should be called subsequently to Initialize().
-Method SetupClient(ConnectionTimeout As %Integer = 3000, MessageSecurityMode As %Integer = 1, ClientURI = "", CertificatePathname As %String = "", PrivateKeyPathname As %String = "", TrustListDir As %String = "", RevocationListDir As %String = "") As %Status [ Final ]
+Method SetupClient(ConnectionTimeout As %Integer = 3000, MessageSecurityMode As %Integer = 1, ClientURI = "", CertificatePathname As %String = "", PrivateKeyPathname As %String = "", TrustListDir As %String = "", RevocationListDir As %String = "", ResetFlag As %Integer = 0) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
 	
 	Try {
-		
+
+		#; Set the unicode flag for the connector
+		set tVersionIsUnicode = $System.Version.IsUnicode()
+
 		#; Call the library entry point
-		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfSetupClientC,"",$LB(..Handle,ConnectionTimeout,MessageSecurityMode,ClientURI,CertificatePathname,PrivateKeyPathname,TrustListDir,RevocationListDir))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfSetupClientC,"",$LB(..Handle,ConnectionTimeout,MessageSecurityMode,ClientURI,CertificatePathname,PrivateKeyPathname,TrustListDir,RevocationListDir,tVersionIsUnicode,ResetFlag))
 		
 		#; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
@@ -419,6 +429,29 @@ Method Disconnect() As %Status [ Final ]
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
 
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+	Quit tSC
+}
+
+Method Browse(Output Results As %List, NodeTypes As %List, NodeNamespaces As %List, NodeIds As %List) As %Status [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim e As %Exception.AbstractException
+	
+	Try {
+		
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfBrowse,"",$LB(..Handle,NodeTypes,NodeNamespaces,NodeIds))
+  
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+        #; Set output variables
+        //Set Results = $LI(tRetval,2)
+        Set Results = tRetval
+		        
 	} Catch (e) {
 		Set tSC=e.AsStatus()
 	}
@@ -796,7 +829,7 @@ Method DeleteSubscriptionSet(QueryHandle As %Integer) As %Status [ Final ]
 // --------------------------------------------------------------------------------------------
 
 /// Reads the current value from a node on a server.
-Method ReadValueAttribute(Output Results as %List, NodeId, NodeNamespace As %Integer, NodeIdType as %Integer = 0) As %Status [ Final ]
+Method ReadValueAttribute(Output Results As %List, NodeId, NodeNamespace As %Integer, NodeIdType As %Integer = 0) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -831,7 +864,7 @@ Method ReadValueAttribute(Output Results as %List, NodeId, NodeNamespace As %Int
 /// the NodeId argument, either a string or an integer. (Use 
 /// $$$OpcuaNodeIdTypeString or $$$OpcuaNodeIdTypeNumeric.)</li>
 /// </ul>
-Method WriteValueAttribute(Datum, DataType as %Integer, NodeId, NodeNamespace As %Integer, NodeIdType as %Integer = 0) As %Status [ Final ]
+Method WriteValueAttribute(Datum, DataType As %Integer, NodeId, NodeNamespace As %Integer, NodeIdType As %Integer = 0) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException

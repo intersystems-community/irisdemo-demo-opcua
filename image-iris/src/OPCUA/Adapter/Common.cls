@@ -10,7 +10,7 @@ Parameter SETTINGS = "URL:Connection,ConnectionRetryTimeout:Connection,DataSourc
 
 /// The URL of the server from which data is sought. 
 /// (e.g. <i>opc.tcp://servername:4840</i>)
-Property URL As %String(MAXLEN=200);
+Property URL As %String(MAXLEN = 200);
 
 /// The duration (in seconds), since the last time that 
 /// the OPC UA client was able to connect to the target
@@ -24,19 +24,19 @@ Property ConnectionRetryTimeout As %Integer [ InitialExpression = 600 ];
 Property DataSourceClass As %String;
 
 /// The username with which to log on to the OPC UA server.
-Property Username as %String;
+Property Username As %String;
 
 /// The password with which to log on to the OPC UA server.
-Property Password as %String;
+Property Password As %String;
 
-Property SecurityMode as %String(DISPLAYLIST=",None,Sign & Encrypt",VALUELIST=",1,3") [ InitialExpression = "1", Required ];
+Property SecurityMode As %String(DISPLAYLIST = ",None,Sign & Encrypt", VALUELIST = ",1,3") [ InitialExpression = "1", Required ];
 
 /// The "application URI" of this IRIS OPC UA connector. 
 /// Notice that this identifying string may need to match
 /// comparable identifying strings noted within certificates
 /// used to identify this application to the target OPC UA
 /// server.
-Property ClientURI as %String(MAXLEN=200);
+Property ClientURI As %String(MAXLEN = 200);
 
 /// The full pathname of the certificate that is to be 
 /// used to identify the IRIS OPC UA connector as a client 
@@ -44,12 +44,12 @@ Property ClientURI as %String(MAXLEN=200);
 /// need to have been signed by a certicate authority that
 /// is trusted by the target OPC UA server. Should be
 /// supplied in DER format.
-Property PublicCertificate as %String(MAXLEN=900);
+Property PublicCertificate As %String(MAXLEN = 900);
 
 /// The full pathname of the private key that is to be used
 /// by this IRIS OPC UA connector in communications with the
 /// target OPC UA server. Should be supplied in DER format.
-Property PrivateKey as %String(MAXLEN=900);
+Property PrivateKey As %String(MAXLEN = 900);
 
 /// The full pathname of the directory in which the certificates
 /// of trusted sources are kept. Importantly, this directory
@@ -58,14 +58,14 @@ Property PrivateKey as %String(MAXLEN=900);
 /// or a trusted certificate of a target OPC UA server itself.
 /// Certificates in this directory should be supplied in 
 /// DER format.
-Property TrustListDir as %String(MAXLEN=900);
+Property TrustListDir As %String(MAXLEN = 900);
 
 /// The full pathname of the directory in which certificate 
 /// revocation lists (CRLs) are to be held. Such CRLs may be
 /// required for connecting to any given OPC UA server even  
 /// in the event that no certificates have been revoked in
 /// regards to that server.
-Property RevocationListDir as %String(MAXLEN=900);
+Property RevocationListDir As %String(MAXLEN = 900);
 
 // *** PRIVATE PROPERTIES ***
 
@@ -73,7 +73,9 @@ Property Client As OPCUA.Client [ Private ];
 
 Property IsConnected As %Integer [ Private ];
 
-Property LastReportedError As %Status [ Private ]; 
+Property ResetClientFlag As %Integer [ Private ];
+
+Property LastReportedError As %Status [ Private ];
 
 Property ConnectionRetryEndTime As %TimeStamp [ Private ];
 
@@ -86,6 +88,7 @@ Method OnInit() As %Status
 	try {
 
 		set ..IsConnected = 0
+		set ..ResetClientFlag = 0
 
 		set ..Client = ##class(OPCUA.Client).%New()
 		set tSC = ..Client.Initialize()
@@ -111,7 +114,22 @@ Method Connect() As %Status [ Private ]
 	#dim tSC as %Status = $$$OK
 	
 	try {
-	
+
+		if ..ResetClientFlag '= 0 {
+
+			set tSC = ..Client.SetupClient("",..SecurityMode,..ClientURI,..PublicCertificate,..PrivateKey,..TrustListDir,..RevocationListDir)
+
+			if $$$ISERR(tSC) {
+
+				$$$LOGERROR("Error encountered while resetting client [c.c] : "_$SYSTEM.Status.GetErrorText(tSC))
+				Quit
+
+			} else {
+
+				$$$TRACE("OPCUA Client reset [c.c]")
+			}
+		}
+
 		set tSC = ..Client.Connect(..URL,..Username,..Password)
 		//Quit:$$$ISERR(tSC)
 

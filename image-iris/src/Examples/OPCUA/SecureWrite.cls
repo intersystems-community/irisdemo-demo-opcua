@@ -1,7 +1,7 @@
 Include (OPCUA.Constants, Ensemble)
 
 /// IRIS OPC UA Secure Write Example
-Class Examples.OPCUA.SecureWrite 
+Class Examples.OPCUA.SecureWrite
 {
 
 /// Using a secure connection, writes an integer value to a specific
@@ -11,7 +11,7 @@ Class Examples.OPCUA.SecureWrite
 /// data feed example Examples.OPCUADS.SecureExample, and that the
 /// effects of this test can be seen in the output of that example
 /// when that data feed is enabled and sourcing data. 
-ClassMethod Run() 
+ClassMethod Run()
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -77,7 +77,7 @@ ClassMethod Run()
 		Set tSC=e.AsStatus()
 	}
 	
-	Quit tSC 
+	Quit tSC
 }
 
-} 
+}

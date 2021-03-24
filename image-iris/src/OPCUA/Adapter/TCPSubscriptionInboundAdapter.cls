@@ -86,7 +86,6 @@ Property RequestedSamplingInterval As %Numeric [ InitialExpression = 500 ];
 /// section 7.16 of the OPC UA specification.
 Property RequestedQueueSize As %Integer [ InitialExpression = 1 ];
 
-
 // *** PRIVATE PROPERTIES ***
 
 Property Specification As %List [ Private ];
@@ -98,7 +97,6 @@ Property QtySequentialEmptyResults As %Integer [ InitialExpression = 0, Private 
 Property MaxInternalQueueSize As %Integer [ InitialExpression = 0, Private ];
 
 Property MaxBatchSize As %Integer [ InitialExpression = 0, Private ];
-
 
 // *** METHODS ***
 
@@ -264,17 +262,35 @@ Method OnTask() As %Status
 	if $$$ISERR(tSC) {
 
 		try {
-			#dim tTmp as %Integer = -1
-			do ..Client.GetClientState("",.tTmp)
-			set ..IsConnected = tTmp
+
+			#dim tTmpConn as %Integer = -1
+			#dim tTmpReset as %Integer = 0
+			
+			do ..Client.GetClientState("",.tTmpConn,"","",.tTmpReset)
+			
+			set ..IsConnected = tTmpConn
+			set ..ResetClientFlag = tTmpReset
+		
 		} catch (e) {
 			set ..IsConnected = 0
+			set ..ResetClientFlag = 0
 		}
 
 		if ..LastReportedError '= tSC {
-			$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
+
+			if ##class(OPCUA.Utils).ErrTextIsTypeInfo($SYSTEM.Status.GetErrorText(tSC)) {
+
+				//$$$LOGINFO($SYSTEM.Status.GetErrorText(tSC))
+				$$$TRACE($SYSTEM.Status.GetErrorText(tSC))
+				set ..BusinessHost.%WaitForNextCallInterval = 0
+
+			} else {
+
+				$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
+				set ..BusinessHost.%WaitForNextCallInterval = 1	
+			}
 			set ..LastReportedError = tSC
-			set ..BusinessHost.%WaitForNextCallInterval = 1	
+
 		} else {
 			$$$TRACE("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
 		}
@@ -282,10 +298,11 @@ Method OnTask() As %Status
 		$$$SetHostMonitor(..BusinessHost.%ConfigName,$$$eMonitorStatus,"Error")
 
 		if ##class(%SYSTEM.SQL).DATEDIFF("ms",..ConnectionRetryEndTime,$ZTimestamp) > 0 {
+			$$$LOGERROR("Error encountered : Maximum time since a successful response exceeded : "_$SYSTEM.Status.GetErrorText(tSC))
 			if ..IsConnected {
-				$$$LOGERROR("Error encountered : Maximum time since a successful response exceeded : "_$SYSTEM.Status.GetErrorText(tSC))
 				set ..IsConnected = 0
 			}
+			set ..BusinessHost.%QuitTask = 1
 			return tSC
 		}
 

@@ -1,11 +1,9 @@
 Include (%callout, OPCUA.Constants, Ensemble)
 
-
 /// Miscellaneous utility functions used in conjunction with
 /// the OPC-UA connector.
 Class OPCUA.Utils
 {
-
 
 /// Used to load the dynamic library containing the native code
 /// for the OPC-UA connector. This function must be called prior
@@ -62,8 +60,13 @@ ClassMethod Initialize() As %Status
 
         if $$$ISERR(tSC) {
             $$$LOGERROR("Unable to load IrisOPCUA : Error returned : "_$SYSTEM.Status.GetErrorText(tSC))
-        } Else {    
-            $$$LOGINFO("IrisOPCUA loaded successfully")
+        } Else {
+
+            set tSC = ##class(OPCUA.Utils).GetVersion(.tRetval) // Reusing tRetval
+            Quit:$$$ISERR(tSC)
+            
+            set tVersion = "v"_$LI(tRetval,2)
+            $$$LOGINFO("IrisOPCUA loaded successfully : "_tVersion)
         }
 
     } catch (e) {
@@ -74,12 +77,10 @@ ClassMethod Initialize() As %Status
     Quit tSC
 }
 
-
-
 /// Used to specify the pathname of a dynamic library, usually
 /// one named as <i>irisopcua.so</i>, 
 /// that contains the native code for the OPC-UA connector.
-ClassMethod Install(pPathname as %String) As %Status
+ClassMethod Install(pPathname As %String) As %Status
 {
     #dim tSC as %Status = $$$OK
 
@@ -94,9 +95,7 @@ ClassMethod Install(pPathname as %String) As %Status
     Quit tSC
 }
 
-
-
-ClassMethod GetLibPathname(Output pPathname as %String) As %Status
+ClassMethod GetLibPathname(Output pPathname As %String) As %Status
 {
     #dim tSC as %Status = $$$OK
     
@@ -119,6 +118,79 @@ ClassMethod GetLibPathname(Output pPathname as %String) As %Status
     }
 
     Quit tSC
+}
+
+ClassMethod GetUStr(pStr As %String) As %String
+{
+    set tRet=""
+
+    try {
+
+        if $System.Version.IsUnicode() {
+
+            set tLen=$L(pStr),i=1
+            while i <= tLen {
+                set c = $E(pStr,i,i)
+                if c = "\" {
+                    if i + 1 > tLen Quit // ERROR
+                    set c = $E(pStr,i+1,i+1)
+                    if c = "\" {
+                        set tRet=tRet_"\",i=i+2
+                    } elseif c = "u" {
+                        if i + 5 > tLen Quit // ERROR
+                        set tRet=tRet_$C($SYSTEM.Util.HexToDecimal($E(pStr,i+2,i+5))),i=i+6
+                    } else { 
+                        Quit // ERROR
+                    }
+                } else { 
+                    set tRet=tRet_c,i=i+1
+                }
+            }
+
+        } else {
+
+            do ##class(OPCUA.Utils).Initialize() // just in case
+            set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfGetUStr,"",$LB(pStr,1))
+
+            #; Errors are not returned, fragments instead.
+            #; Ignore any error. Return the result.
+            set tRet = $LI(tRetval,2)
+
+        }
+
+
+    } catch (e) {
+        // Ignore errors. Return the result.
+    }
+
+    return tRet
+}
+
+ClassMethod ErrTextIsTypeInfo(ErrText As %String) As %Boolean
+{
+	set tSubstr = "(Info / No Error"
+	return $FIND(ErrText,tSubstr) '= 0
+}
+
+ClassMethod GetVersion(Output pOut As %List) As %Status
+{
+    #dim tSC as %Status = $$$OK
+
+    try {
+
+		set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfVersion,"")
+
+        #; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=##class(OPCUA.Client).DecodeError(tRetval) Quit
+
+        #; Set output variables
+        Set pOut = tRetval
+        
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+
+	Quit tSC
 }
 
 }

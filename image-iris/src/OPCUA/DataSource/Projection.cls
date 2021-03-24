@@ -86,7 +86,13 @@ ClassMethod ProcessObj(oObj As %CompiledClass, pOPCUADefaultNamespace As %String
             Quit
         }
 
-        Set tNodeName = oProp.Parameters.GetAt("OPCUANODENAME")
+        if '$System.Version.IsUnicode() {
+            set tSC = ##class(OPCUA.Utils).Initialize() // required for GetUStr on 8-bit IRIS
+            Quit:$$$ISERR(tSC) // if initialization fails, report the error (GetUStr will not)
+        }
+        Set tNodeName = ""
+        Set tNodeNameRaw = oProp.Parameters.GetAt("OPCUANODENAME")
+        Set tNodeName = ##class(OPCUA.Utils).GetUStr(tNodeNameRaw)
         //Write !,"tNodeName for property ",pPropertyPath_"."_tPropName,": ",tNodeName
 
         // Are we overwriting the previous node name? If after overwriting, we end up with a empty node name, we will be validating it later

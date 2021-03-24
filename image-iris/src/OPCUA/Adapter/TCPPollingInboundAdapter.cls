@@ -112,6 +112,7 @@ Method OnTask() As %Status
 
 		if ##class(%SYSTEM.SQL).DATEDIFF("s",..ConnectionRetryEndTime,$ZTimestamp) > 0 {
 			$$$LOGERROR("Connection retry period concluded. Unable to establish connection.")
+			set ..BusinessHost.%QuitTask = 1
 			return tSC
 		}
 
