@@ -284,6 +284,11 @@ Method OnTask() As %Status
 				$$$TRACE($SYSTEM.Status.GetErrorText(tSC))
 				set ..BusinessHost.%WaitForNextCallInterval = 0
 
+			} elseif ##class(OPCUA.Utils).AreSimilarOpcuaDisconnectErrors($SYSTEM.Status.GetErrorText(..LastReportedError),$SYSTEM.Status.GetErrorText(tSC)) {
+
+				$$$TRACE("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
+				set ..BusinessHost.%WaitForNextCallInterval = 1	
+
 			} else {
 
 				$$$LOGERROR("Error encountered : "_$SYSTEM.Status.GetErrorText(tSC)_" : "_..Client.GetClientStateString())
