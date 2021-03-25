@@ -90,6 +90,8 @@ Method OnInit() As %Status
 		set ..IsConnected = 0
 		set ..ResetClientFlag = 0
 
+		set ..ConnectionRetryEndTime = ##class(%SYSTEM.SQL).DATEADD("s",..ConnectionRetryTimeout,$ZTimestamp)
+
 		set ..Client = ##class(OPCUA.Client).%New()
 		set tSC = ..Client.Initialize()
 		Quit:$$$ISERR(tSC)
