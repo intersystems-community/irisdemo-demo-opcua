@@ -779,7 +779,7 @@ Method CreateSubscriptionSetB(Output QueryHandle As %Integer, Specification As %
 /// resemblance to the output of some of the polling functions. This is
 /// because, unlike the polling functions, this function can return 
 /// multiple rows per invocation.
-Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, PollingTimeout As %Integer = 500, MaxLines As %Integer = 0) As %Status [ Final ]
+Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, PollingTimeout As %Integer = 500, MaxLines As %Integer = 0, ClientRegenOpt As %Integer = 0) As %Status [ Final ]
 {
 	#dim tSC As %Status = $$$OK
 	#dim e As %Exception.AbstractException
@@ -787,7 +787,7 @@ Method PollSubscriptionSet(Output Results As %List, QueryHandle As %Integer, Pol
 	Try {
 		
 		#; Call the library entry point
-		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfPollSubscription,"",$LB(..Handle,QueryHandle,PollingTimeout,MaxLines))
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfPollSubscription,"",$LB(..Handle,QueryHandle,PollingTimeout,MaxLines,ClientRegenOpt))
 
         #; Test for error condition
         If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit

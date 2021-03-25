@@ -185,7 +185,7 @@ Method OnTask() As %Status
 
 	try {
 		
-		if ..IsConnected < 1 {
+		if (..IsConnected < 1) || (..ResetClientFlag '= 0) {
 
 			set tSC = ..Connect()
 			$$$ThrowOnError(tSC)
@@ -195,7 +195,7 @@ Method OnTask() As %Status
 
 		#dim tList as %List
 
-		set tSC = ..Client.PollSubscriptionSet(.tList,..QueryHandle,..SubscriptionPollingTimeout,..MaxBatchSize)
+		set tSC = ..Client.PollSubscriptionSet(.tList,..QueryHandle,..SubscriptionPollingTimeout,..MaxBatchSize,1)
 		Quit:$$$ISERR(tSC)
 
 		//set tSC = ..BusinessHost.ProcessInput(.tList)  

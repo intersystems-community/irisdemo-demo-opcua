@@ -174,22 +174,22 @@ ClassMethod ErrTextIsTypeInfo(ErrText As %String) As %Boolean
 
 ClassMethod AreSimilarOpcuaDisconnectErrors(ErrStr1 As %String, ErrStr2 As %String) As %Boolean
 {
-    #; if $FIND(ErrStr1,"0x800A0000") {
-    #;     return $FIND(ErrStr2,"0x80AD0000") || $FIND(ErrStr2,"0x80AE0000")
-    #; } elseif $FIND(ErrStr1,"0x80AD0000") {
-    #;     return $FIND(ErrStr2,"0x800A0000") || $FIND(ErrStr2,"0x80AE0000")
-    #; } elseif $FIND(ErrStr1,"0x80AE0000") {
-    #;     return $FIND(ErrStr2,"0x800A0000") || $FIND(ErrStr2,"0x80AD0000")
-    #; } else {
-    #;     return 0
-    #; }
     if $FIND(ErrStr1,"0x800A0000") {
-        return $FIND(ErrStr2,"0x80AD0000")
+        return $FIND(ErrStr2,"0x80AD0000") || $FIND(ErrStr2,"0x80AE0000")
     } elseif $FIND(ErrStr1,"0x80AD0000") {
-        return $FIND(ErrStr2,"0x800A0000")
+        return $FIND(ErrStr2,"0x800A0000") || $FIND(ErrStr2,"0x80AE0000")
+    } elseif $FIND(ErrStr1,"0x80AE0000") {
+        return $FIND(ErrStr2,"0x800A0000") || $FIND(ErrStr2,"0x80AD0000")
     } else {
         return 0
     }
+    #; if $FIND(ErrStr1,"0x800A0000") {
+    #;     return $FIND(ErrStr2,"0x80AD0000")
+    #; } elseif $FIND(ErrStr1,"0x80AD0000") {
+    #;     return $FIND(ErrStr2,"0x800A0000")
+    #; } else {
+    #;     return 0
+    #; }
 }
 
 ClassMethod GetVersion(Output pOut As %List) As %Status
