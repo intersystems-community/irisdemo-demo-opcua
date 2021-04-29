@@ -10,10 +10,6 @@ Property Temperature As OPCUA.Types.DoubleDataValue(OPCUANODENAME = "AirConditio
 
 Property Humidity As OPCUA.Types.DoubleDataValue(OPCUANODENAME = "AirConditioner_1.Humidity");
 
-Property AnArrayOfDoubles As OPCUA.Types.Array.DoubleDataValues(OPCUANODENAME = "AirConditioner_1.Humidity");
-
-Property MultidimensionalExample As OPCUA.Types.Multidimensional(OPCUANODENAME = "AirConditioner_1.Humidity");
-
-// Property DemoString As OPCUA.Types.StringDataValue(OPCUANODENAME = "Demo.Dynamic.Scalar.String", OPCUANAMESPACE = 2);
+//Property DemoString As OPCUA.Types.StringDataValue(OPCUANODENAME = "Demo.Dynamic.Scalar.String", OPCUANAMESPACE = 2);
 
 }
