@@ -1,3 +1,3 @@
-## 0.3.0 (July 21, 2020)
+## 0.3.1 (May 06, 2021)
   - OPCUA Connector with TCP/IP Pulling available
 
