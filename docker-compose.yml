@@ -7,7 +7,7 @@ services:
       - plc
     hostname: iris
     init: true
-    image: intersystemsdc/irisdemo-demo-opcua:iris-version-0.3.0
+    image: intersystemsdc/irisdemo-demo-opcua:iris-version-0.3.1
     ports:
     - "51793:51773" # 51773 is the superserver default port
     - "52783:52773" # 52773 is the webserver/management portal port
@@ -26,7 +26,7 @@ services:
   certified-server:
     hostname: certified-server
     init: true
-    image: intersystemsdc/irisdemo-demo-opcua:server-ctt-version-0.3.0
+    image: intersystemsdc/irisdemo-demo-opcua:server-ctt-version-0.3.1
     ports:
     - "10001:4840"     # opc.tcp
   
