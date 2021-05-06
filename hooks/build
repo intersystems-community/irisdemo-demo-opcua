@@ -16,4 +16,4 @@ echo "   DOCKER_TAG     : $IMAGE_NAME"
 docker build -t ${DOCKER_REPO}:iris-${DOCKER_TAG} ./image-iris
 
 # Building the OPCUA Certified Server Image
-docker build -t ${DOCKER_REPO}:server-ctt-${DOCKER_TAG} ./image-server-ctt
+docker build -t ${DOCKER_REPO}:server-ctt-${DOCKER_TAG} ./image-opcua-certified-server
