@@ -188,9 +188,6 @@ Windows, Mac OS, and Docker/Ubuntu platforms.
 The demos in this repository can be run using only a few steps:
 
 * Download the relevant code from GitHub.
-* Run "./build.sh" in order to build the IRIS Docker image.
-(This command also builds a second Docker image that is 
-used in the "SecureExample" specifically. See below.) 
 * Run "docker-compose up" in order to start the three Docker containers 
 used by the demos. 
 * Login to the IRIS Management Portal at http://localhost:52783/csp/sys/UtilHome.csp 
