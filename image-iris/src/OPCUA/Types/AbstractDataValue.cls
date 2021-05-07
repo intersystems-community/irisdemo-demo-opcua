@@ -1,3 +1,5 @@
+/// When you make a request to OPC-UA for the value of a Node, it comes with its SourceTimeStamp,
+/// ServerTimeStamp and Status. 
 Class OPCUA.Types.AbstractDataValue Extends %SerialObject [ PropertyClass = OPCUA.Types.PropertyClass ]
 {
 

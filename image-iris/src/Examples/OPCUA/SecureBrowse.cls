@@ -60,9 +60,9 @@ ClassMethod Run()
 			for i=1:1:$LL(tRefList) {
 				set tRef = $LI(tRefList,i)
 				if $LI($LI(tRef,3),3) = 0 {
-					w i_" :  "_$LI(tRef,4)_" ("_$LI($LI(tRef,3),1)_","_$LI($LI(tRef,3),2)_")",!
+					w i_" :  "_$LI($LI(tRef,4),1)_" ("_$LI($LI(tRef,3),1)_","_$LI($LI(tRef,3),2)_")",!
 				} else {
-					w i_" :  "_$LI(tRef,4)_" ("_$LI($LI(tRef,3),1)_",'"_$LI($LI(tRef,3),2)_"')",!
+					w i_" :  "_$LI($LI(tRef,4),1)_" ("_$LI($LI(tRef,3),1)_",'"_$LI($LI(tRef,3),2)_"')",!
 				}
 			}
 

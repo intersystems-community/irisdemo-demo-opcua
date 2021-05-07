@@ -66,7 +66,7 @@ upon a desired target server. Such "DataSource" classes are persistent within IR
 and thus, when values are eventually accessed from the desired OPC UA server, 
 those values are immediately stored within IRIS and made queryable 
 using both ObjectScript as well as SQL.
-In order to perform its function, each "DataSource" must class extend not only 
+In order to perform its function, each "DataSource" class must extend not only 
 %Persistent but also OPCUA.DataSource.Definition,
 and this allows the adapter to set up the necessary framework in order 
 to gather and store the relevant data. 
@@ -92,9 +92,12 @@ Importantly, the data type above is declared as OPCUA.Types.DoubleDataValue,
 which is a special data type that allows access to both 
 the double value that is being sought as well as timestamps 
 indicating when that double was placed on the server. Currently, this
-adapter supports the accessing of primitive strings and integers
-as well, each of which must be accessed using similar 
+adapter supports the accessing of primitive strings and integers,
+as well as other basic OPC UA data types,
+each of which must be accessed using similar 
 data type-related ObjectScript classes.
+Similar means can be used to obtain arrays of data as well
+(see ArrayExample, below).
 
 ## Polling Access vs. OPC UA Subscription
 
@@ -177,14 +180,14 @@ IRIS OPC UA client at this time. (It is unclear if security
 standards may be automatically reduced if a target server 
 does not require them.)
 
+Security features are available for this connector on each of 
+Windows, Mac OS, and Docker/Ubuntu platforms.
+
 ## Running the Demos Importing Data into IRIS
 
 The demos in this repository can be run using only a few steps:
 
 * Download the relevant code from GitHub.
-* Run "./build.sh" in order to build the IRIS Docker image.
-(This command also builds a second Docker image that is 
-used in the "SecureExample" specifically. See below.) 
 * Run "docker-compose up" in order to start the three Docker containers 
 used by the demos. 
 * Login to the IRIS Management Portal at http://localhost:52783/csp/sys/UtilHome.csp 
@@ -194,7 +197,7 @@ with username "SuperUser" and password "sys".
 Each is itself a separate demo, each 
 intended to place incoming OPC UA data on a different table/global within IRIS.
 
-At this time, it is intended that there be five 
+At this time, it is intended that there be six
 OPC UA BusinessService demonstrations available 
 within this repository now or in the near future:
 
@@ -235,6 +238,11 @@ locally running server is one that has been certified by the OPC Foundation
 in its use of security, and connecting to that server requires that certain minimum 
 security standards are met. More information on the server can be found at 
 https://open62541.org/certified-sdk.
+* Array Example (Examples.OPCUADS.ArrayExamole.cls) - This example shows 
+IRIS use the OPC UA adapter in order to download arrays of data from the
+publicly available OPC UA server on the Internet at opc.tcp://opcuaserver.com:48010.
+Aside from the array format in which the data is downloaded, this example is 
+fundamentally similar to the Internet Polling Example mentioned above.
 
 ## SimpleWrite and SecureWrite Demos
 
@@ -297,22 +305,9 @@ the values in "TheAnswer_Value" column should be "42" instead.
 
 ## Future Work
 
-Future work regarding this adapter may include work on:
+TBD
 
-* Security - Future work may implement greater support for 
-various levels of security.
-* Expanded Type Set - Currently, 
-this adapter supports only a small number of primitive data types 
-while OPC UA is defined so as to support quite a few others. 
-Future work may involve modifying the adapter 
-so that it can download other more complex data types as well.
-* Expanded Function Set - The OPC UA protocol specifies ways in
-which numerous operations may be conducted, most of which are not
-implemented here. Future work may implement some of those functions.
+## Product Availability
 
-## Caution
-
-This OPC UA adapter for the IRIS is implemented using a native-code 
-linked-library compiled specifically for use in Ubuntu containers.
-Other implementations of the adapter for use on other 
-platforms and operating systems may be available.
+Versions of this OPC UA code are available for use on Windows and Mac OS,
+in addition to the Docker/Ubuntu version used for these demos.

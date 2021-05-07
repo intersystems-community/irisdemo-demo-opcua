@@ -354,6 +354,26 @@ Method GetClientStateString(ByRef pSC As %Status = "") As %String [ Final ]
 	return tRetStr
 }
 
+/// Sets logfile
+Method SetLogFile(LogFileName As %String) As %Status [ Final ]
+{
+	#dim tSC As %Status = $$$OK
+	#dim e As %Exception.AbstractException
+	
+	Try {
+
+		#; Call the library entry point
+		Set tRetval=$ZF(-5,%ZUtilsIrisOpcuaLibraryId,$$$zfSetLogFile,"",$LB(LogFileName))
+		
+		#; Test for error condition
+        If $List(tRetval,1)'=0 Set tSC=..DecodeError(tRetval) Quit
+
+	} Catch (e) {
+		Set tSC=e.AsStatus()
+	}
+	Quit tSC
+}
+
 /// Performs necessary setup functions prior to client's connecting
 /// to a server. Should be called subsequently to Initialize().
 Method SetupClient(ConnectionTimeout As %Integer = 3000, MessageSecurityMode As %Integer = 1, ClientURI = "", CertificatePathname As %String = "", PrivateKeyPathname As %String = "", TrustListDir As %String = "", RevocationListDir As %String = "", ResetFlag As %Integer = 0) As %Status [ Final ]

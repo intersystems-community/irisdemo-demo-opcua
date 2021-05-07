@@ -49,6 +49,7 @@ ROUTINE OPCUA.Constants [Type=INC]
 #define zfBrowseNext        				43
 #define zfVersion           				44
 #define zfGetUStr           				45
+#define zfSetLogFile                        46
 
 
 

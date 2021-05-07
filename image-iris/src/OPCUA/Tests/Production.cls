@@ -1,4 +1,4 @@
-Class Examples.OPCUADS.Production Extends Ens.Production
+Class OPCUA.Tests.Production Extends Ens.Production
 {
 
 XData ProductionDefinition
@@ -6,13 +6,29 @@ XData ProductionDefinition
 <Production Name="Examples.OPCUADS.ExampleProduction" LogGeneralTraceEvents="false">
   <Description></Description>
   <ActorPoolSize>2</ActorPoolSize>
-  <Item Name="ArrayExample" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
+  <Item Name="DataTest" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
  Enabled="false" Foreground="false" 
- Comment="This example demonstrates how arrays of data can be imported into IRIS." 
+ Comment="DataTest Data" 
  LogTraceEvents="true" Schedule="">
-    <Setting Target="Adapter" Name="DataSourceClass">Examples.OPCUADS.ArrayExample</Setting>
+    <Setting Target="Adapter" Name="DataSourceClass">OPCUA.Tests.DataTestDS</Setting>
     <Setting Target="Adapter" Name="URL">opc.tcp://opcuaserver.com:48010</Setting>
-    <Setting Target="Adapter" Name="CallInterval">15</Setting>
+    <Setting Target="Adapter" Name="CallInterval">5</Setting>
+  </Item>
+  <Item Name="AttributesTestDS" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
+ Enabled="false" Foreground="false" 
+ Comment="Attributes Test Data" 
+ LogTraceEvents="true" Schedule="">
+    <Setting Target="Adapter" Name="DataSourceClass">OPCUA.Tests.AttributesTestDS</Setting>
+    <Setting Target="Adapter" Name="URL">opc.tcp://opcuaserver.com:48010</Setting>
+    <Setting Target="Adapter" Name="CallInterval">5</Setting>
+  </Item>
+  <Item Name="ScalarTypesTestDS" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
+ Enabled="false" Foreground="false" 
+ Comment="Scalar Types Test Data"
+ LogTraceEvents="true" Schedule="">
+    <Setting Target="Adapter" Name="DataSourceClass">OPCUA.Tests.ScalarTypesTestDS</Setting>
+    <Setting Target="Adapter" Name="URL">opc.tcp://opcuaserver.com:48010</Setting>
+    <Setting Target="Adapter" Name="CallInterval">5</Setting>
   </Item>
   <Item Name="PollingExample" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
  Enabled="false" Foreground="false" 
@@ -66,6 +82,14 @@ XData ProductionDefinition
     <Setting Target="Adapter" Name="URL">opc.tcp://opcuaserver.com:48010</Setting>
     <Setting Target="Adapter" Name="CallInterval">5</Setting>
     <Setting Target="Adapter" Name="ReestablishOnEmptyResult">3</Setting>
+  </Item>
+  <Item Name="ArrayExample" Category="" ClassName="OPCUA.Service.TCPPollingService" PoolSize="1"
+ Enabled="false" Foreground="false" 
+ Comment="Array Example" 
+ LogTraceEvents="true" Schedule="">
+    <Setting Target="Adapter" Name="DataSourceClass">Examples.OPCUADS.ArrayExample</Setting>
+    <Setting Target="Adapter" Name="URL">opc.tcp://opcuaserver.com:48010</Setting>
+    <Setting Target="Adapter" Name="CallInterval">5</Setting>
   </Item>
 </Production>
 }

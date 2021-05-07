@@ -4,7 +4,7 @@ Class OPCUA.Adapter.Common Extends Ens.InboundAdapter
 {
 
 /// Configurable settings
-Parameter SETTINGS = "URL:Connection,ConnectionRetryTimeout:Connection,DataSourceClass:Data,Username:User,Password:User,SecurityMode:Security,ClientURI:Security,PublicCertificate:Security,PrivateKey:Security,TrustListDir:Security,RevocationListDir:Security";
+Parameter SETTINGS = "URL:Connection,ConnectionRetryTimeout:Connection,DataSourceClass:Data,Username:User,Password:User,SecurityMode:Security,ClientURI:Security,PublicCertificate:Security,PrivateKey:Security,TrustListDir:Security,RevocationListDir:Security,LogFileTag:Logging";
 
 // *** PROPERTIES INFLUENCED BY SETTINGS ***
 
@@ -67,6 +67,16 @@ Property TrustListDir As %String(MAXLEN = 900);
 /// regards to that server.
 Property RevocationListDir As %String(MAXLEN = 900);
 
+/// Indicates a tag that will identify a logfile for supplemental
+/// logging regarding this process. If omitted, supplemental 
+/// logging will not be performed. Importantly, under some circumstances,
+/// use of this supplemental logging can result in a great amount of 
+/// being written to disk and may result in degradation of application 
+/// performance. Consequently, it is recommended that this feature only 
+/// be used for the purposes of development and debugging and not for 
+/// general system monitoring. 
+Property LogFileTag As %String(MAXLEN = 50);
+
 // *** PRIVATE PROPERTIES ***
 
 Property Client As OPCUA.Client [ Private ];
@@ -96,6 +106,7 @@ Method OnInit() As %Status
 		set tSC = ..Client.Initialize()
 		Quit:$$$ISERR(tSC)
 
+		set tSC = ..Client.SetLogFile(..LogFileTag)
 		set tSC = ..Client.SetupClient("",..SecurityMode,..ClientURI,..PublicCertificate,..PrivateKey,..TrustListDir,..RevocationListDir)
 		Quit:$$$ISERR(tSC)
 
@@ -119,6 +130,7 @@ Method Connect() As %Status [ Private ]
 
 		if ..ResetClientFlag '= 0 {
 
+			set tSC = ..Client.SetLogFile(..LogFileTag)
 			set tSC = ..Client.SetupClient("",..SecurityMode,..ClientURI,..PublicCertificate,..PrivateKey,..TrustListDir,..RevocationListDir)
 
 			if $$$ISERR(tSC) {
