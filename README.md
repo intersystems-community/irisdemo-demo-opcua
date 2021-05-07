@@ -255,9 +255,6 @@ Examples.OPCUA.SecureWrite.Run() procedure.
 In order to run these demos, one must follow the same initial steps as before:
 
 * Download the relevant code from GitHub.
-* Run "./build.sh" in order to build both the IRIS Docker image.
-(The second Docker image used previously in the "SecureExample"
-is also used here in the "SecureWrite" example.)
 * Run "docker-compose up" to start the Docker containers. 
 
 Subsequently, the procedure to access the terminal-based demos differs:
