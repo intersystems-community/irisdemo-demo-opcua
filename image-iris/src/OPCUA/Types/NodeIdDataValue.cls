@@ -3,9 +3,9 @@ Class OPCUA.Types.NodeIdDataValue Extends OPCUA.Types.AbstractDataValue
 
 Property Namespace As %Integer;
 
-Property IdentifierType As %Integer;
-
 Property Identifier;
+
+Property IdentifierType As %Integer;
 
 Storage Default
 {
@@ -23,10 +23,10 @@ Storage Default
 <Value>Namespace</Value>
 </Value>
 <Value name="5">
-<Value>IdentifierType</Value>
+<Value>Identifier</Value>
 </Value>
 <Value name="6">
-<Value>Identifier</Value>
+<Value>IdentifierType</Value>
 </Value>
 </Data>
 <Type>%Storage.Serial</Type>
