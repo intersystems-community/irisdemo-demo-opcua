@@ -15,3 +15,13 @@ this repository, it is recommended that one use the Studio export XML
 file in the windows/Studio directory here when using the connector
 on Windows, instead of using the 
 ObjectScript files in the irisdemo-demo-opcua repository directly.
+
+## libcrypto-1_1-x64.dll
+
+Some versions of IRIS that are not otherwise able to load IrisOPCUA
+can be enabled to do so by placing the libcrypto-1_1-x64.dll found
+here alongside the IrisOPCUA.dll and the open62541.dll in the
+iris/bin directory. IMPORTANT: Do not overwrite IRIS's version
+of this file if it already exists in the iris/bin directory; the
+libcrypto-1_1-x64.dll file found here is intended for supplemental
+use only.
